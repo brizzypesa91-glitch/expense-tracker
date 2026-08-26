@@ -377,3 +377,47 @@ document.addEventListener('DOMContentLoaded', () => {
   // INITIAL START
   checkAuthState();
 });
+
+// FINANCIAL EDUCATION QUOTES SYSTEM
+const financialQuotes = [
+  "Do not save what is left after spending, but spend what is left after saving. — Warren Buffett",
+  "Beware of little expenses. A small leak will sink a great ship. — Benjamin Franklin",
+  "Financial freedom is available to those who learn about it and work for it.",
+  "Before buying, ask yourself: Is this a Need or a Want?",
+  "A budget tells your money where to go instead of wondering where it went.",
+  "Invest in your goals before spending on desires.",
+  "Small daily savings build long-term wealth."
+];
+
+function showTopToast(message) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'custom-toast';
+  toast.innerHTML = `
+    <div class="toast-icon"><i class="fa-solid fa-lightbulb"></i></div>
+    <div class="toast-content">
+      <span>Financial Reminder</span>
+      <p>${message}</p>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  // Ondoa notification ikishamaliza sekunde 5
+  setTimeout(() => {
+    toast.remove();
+  }, 5000);
+}
+
+// Anzisha mzunguko wa kutoa Notification kila sekunde 45
+setInterval(() => {
+  const randomIndex = Math.floor(Math.random() * financialQuotes.length);
+  showTopToast(financialQuotes[randomIndex]);
+}, 45000);
+
+// Onyesha notification ya kwanza sekunde 5 baada ya kuingia kwenye site
+setTimeout(() => {
+  showTopToast("Welcome Brizzy! Always track your money to stay in control of your vision.");
+}, 5000);

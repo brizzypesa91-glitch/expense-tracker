@@ -10,7 +10,21 @@
 </head>
 <body>
 
-  <!-- MINDSET & EXPENSE WARNING POPUP MODAL -->
+   <!-- TOP FLOATING TOAST NOTIFICATION CONTAINER -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- MINDSET & EXPENSE WARNING POPUP MODAL -->
+<div id="modal-overlay" class="modal-overlay is-hidden">
+  <div class="modal-card modal-reminder">
+    <div class="modal-icon warning-icon" id="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3 id="modal-title">Reminder, Brizzy!</h3>
+    <p id="modal-message">Is this purchase a genuine necessity or just a temporary desire?</p>
+    <div class="modal-actions">
+      <button id="modal-btn-cancel" class="btn-modal-cancel is-hidden">Cancel Expense</button>
+      <button id="modal-btn-confirm" class="btn-modal-confirm">I Understand & Agree</button>
+    </div>
+  </div>
+</div>
   <div id="modal-overlay" class="modal-overlay is-hidden">
     <div class="modal-card">
       <div class="modal-icon" id="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
