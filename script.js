@@ -197,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
       authSection.classList.add('is-hidden');
       dashboardSection.classList.remove('is-hidden');
       userDisplayName.textContent = currentUser.username;
+      const heroUserName = document.getElementById('hero-user-name');
+      if (heroUserName) heroUserName.textContent = currentUser.username;
 
       if (currentUser.profilePic) {
         avatarPreview.innerHTML = `<img src="${currentUser.profilePic}" alt="Profile">`;
