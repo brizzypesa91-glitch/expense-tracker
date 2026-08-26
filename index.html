@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker - TZS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Vision Goal - Expense Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -25,18 +25,12 @@
 
   <!-- AUTHENTICATION SECTION -->
   <div id="auth-section">
-    <div class="background-blobs">
-      <div class="blob blob-1"></div>
-      <div class="blob blob-2"></div>
-    </div>
-
     <div class="glass-card">
-      <!-- LOGIN FORM -->
       <div id="login-box">
         <div class="auth-header">
-          <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+          <div class="logo-icon"><i class="fa-solid fa-bullseye"></i></div>
           <h2>Welcome Back!</h2>
-          <p>Login to manage your expenses and budget</p>
+          <p>Login to your Vision Goal tracker</p>
         </div>
 
         <form id="login-form">
@@ -56,12 +50,11 @@
         </div>
       </div>
 
-      <!-- SIGNUP FORM -->
       <div id="signup-box" class="is-hidden">
         <div class="auth-header">
-          <div class="logo-icon"><i class="fa-solid fa-user-plus"></i></div>
+          <div class="logo-icon"><i class="fa-solid fa-bullseye"></i></div>
           <h2>Create Account</h2>
-          <p>Start tracking your money securely</p>
+          <p>Start tracking your vision securely</p>
         </div>
 
         <form id="signup-form">
@@ -77,10 +70,6 @@
             <i class="fa-solid fa-lock"></i>
             <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
           </div>
-          <div class="input-group">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required minlength="6">
-          </div>
           <button type="submit" class="btn-primary">Register</button>
         </form>
 
@@ -94,129 +83,169 @@
   <!-- DASHBOARD SECTION -->
   <div id="dashboard-section" class="is-hidden">
     
-    <!-- 1. HEADER SECTION (Profile & Logout) -->
+    <!-- TOP APP HEADER -->
     <header class="app-header">
-      <div class="user-info">
-        <div class="avatar-container" title="Click to upload profile picture">
+      <div class="header-left">
+        <button id="menu-toggle-btn" class="icon-btn"><i class="fa-solid fa-bars"></i></button>
+        <div class="brand-logo">
+          <i class="fa-solid fa-check-to-slot"></i>
+          <span>VISION GOAL</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn notification-btn"><i class="fa-regular fa-bell"></i><span class="badge-dot"></span></button>
+        <div class="avatar-container" title="Upload profile picture">
           <input type="file" id="profile-upload" accept="image/*" style="display: none;">
           <div id="avatar-preview" class="avatar">
             <i class="fa-solid fa-user"></i>
           </div>
         </div>
-        <div>
-          <h3 id="user-display-name">User</h3>
-          <p>Expense Manager</p>
-        </div>
       </div>
-      <button id="logout-btn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
     </header>
 
     <main class="dashboard-container">
       
-      <!-- 2. VISION GOAL TRACKER CARD -->
+      <!-- HERO WELCOME BANNER -->
+      <section class="hero-banner">
+        <div class="hero-text-content">
+          <p class="hero-subtitle">Welcome back,</p>
+          <h2 id="user-display-name">Brizzy <span class="wave-emoji">👋</span></h2>
+          <p class="hero-desc">Stay focused and reach your ultimate goal.</p>
+          <div class="hero-actions">
+            <button id="hero-btn-goals" class="btn-hero-green"><i class="fa-solid fa-bullseye"></i> My Goals</button>
+            <button id="hero-btn-add" class="btn-hero-outline"><i class="fa-solid fa-plus"></i> Add Income</button>
+          </div>
+        </div>
+        <div class="hero-image-box">
+          <div class="target-3d-icon"><i class="fa-solid fa-bullseye"></i></div>
+        </div>
+      </section>
+
+      <!-- MY ULTIMATE VISION GOAL CARD -->
       <section class="vision-card">
         <div class="vision-header">
           <h3><i class="fa-solid fa-bullseye"></i> My Ultimate Vision Goal</h3>
           <div class="goal-actions-btns">
-            <button id="btn-add-savings" class="btn-add-savings"><i class="fa-solid fa-plus"></i> Add Savings</button>
-            <button id="btn-edit-goal" class="btn-edit-goal"><i class="fa-solid fa-pen"></i> Set Goal</button>
+            <button id="btn-add-savings" class="btn-action-green"><i class="fa-solid fa-plus"></i> Am Working</button>
+            <button id="btn-edit-goal" class="btn-action-outline"><i class="fa-solid fa-pen"></i> Edit Goal</button>
           </div>
         </div>
         <div class="vision-body">
           <div class="vision-info">
-            <span id="goal-title-display" class="goal-title">No goal set yet</span>
+            <span id="goal-title-display" class="goal-label-text">Na goal set yako:</span>
             <span id="goal-amount-display" class="goal-amount">TZS 0 / TZS 0</span>
           </div>
           <div class="progress-bar-container">
             <div id="goal-progress-bar" class="progress-bar" style="width: 0%;"></div>
           </div>
-          <p id="goal-status-text" class="goal-status">Set your target goal to stay focused!</p>
+          <div class="vision-footer-info">
+            <p id="goal-status-text" class="goal-status">Add your target goal to stay focused</p>
+            <span id="goal-percentage">0%</span>
+          </div>
         </div>
 
-        <!-- HIDDEN FORM TO EDIT GOAL TARGET -->
+        <!-- HIDDEN GOAL FORMS -->
         <form id="goal-form" class="goal-form is-hidden">
-          <input type="text" id="goal-title-input" placeholder="e.g., Buy Office Gadgets" required>
-          <input type="number" id="goal-target-input" placeholder="Target Amount (e.g. 300000)" required>
-          <button type="submit" class="btn-save-goal">Save Goal</button>
+          <input type="text" id="goal-title-input" placeholder="e.g., Build Office" required>
+          <input type="number" id="goal-target-input" placeholder="Target Amount" required>
+          <button type="submit" class="btn-save-goal">Save</button>
         </form>
-
-        <!-- HIDDEN FORM TO DEPOSIT SAVINGS TO GOAL -->
         <form id="savings-form" class="goal-form is-hidden">
-          <input type="number" id="savings-amount-input" placeholder="Enter Amount to Deposit (e.g. 10000)" required>
+          <input type="number" id="savings-amount-input" placeholder="Amount to add" required>
           <button type="submit" class="btn-save-goal" style="background: var(--success);">Deposit</button>
         </form>
       </section>
 
-      <!-- 3. MASTER SUMMARY WRAPPER (Kibox Kubwa lenye Vibox Vitatu ndani) -->
-      <section class="summary-wrapper-box">
-        <h3><i class="fa-solid fa-chart-pie"></i> Financial Overview</h3>
-        <div class="summary-cards">
-          <div class="card card-income">
-            <div>
-              <p><i class="fa-solid fa-arrow-down"></i> Total Income</p>
-              <h3 id="total-income">TZS 0</h3>
-            </div>
+      <!-- FINANCIAL OVERVIEW (3 CARDS ROW) -->
+      <section class="financial-overview-card">
+        <h3><i class="fa-solid fa-wallet"></i> Financial Overview</h3>
+        <div class="overview-grid">
+          
+          <!-- Total Income -->
+          <div class="overview-item">
+            <p class="item-title">Total Income</p>
+            <div class="icon-circle income-circle"><i class="fa-solid fa-arrow-down"></i></div>
+            <h3 id="total-income">TZS 0</h3>
+            <span class="time-frame">All time</span>
           </div>
-          <div class="card card-balance">
-            <div>
-              <p>Total Balance</p>
-              <h2 id="total-balance">TZS 0</h2>
-            </div>
+
+          <!-- Total Expense -->
+          <div class="overview-item">
+            <p class="item-title">Total Expense</p>
+            <div class="icon-circle expense-circle"><i class="fa-solid fa-arrow-up"></i></div>
+            <h3 id="total-expense">TZS 0</h3>
+            <span class="time-frame">All time</span>
           </div>
-          <div class="card card-expense">
-            <div>
-              <p><i class="fa-solid fa-arrow-up"></i> Total Expenses</p>
-              <h3 id="total-expense">TZS 0</h3>
-            </div>
+
+          <!-- Net Balance -->
+          <div class="overview-item">
+            <p class="item-title">Net Balance</p>
+            <div class="icon-circle balance-circle"><i class="fa-solid fa-wallet"></i></div>
+            <h3 id="total-balance">TZS 0</h3>
+            <span class="time-frame">All time</span>
           </div>
+
         </div>
       </section>
 
-      <!-- 4. TRANSACTION FORM -->
+      <!-- ADD TRANSACTION FORM -->
       <section class="transaction-form-card">
         <h3><i class="fa-solid fa-circle-plus"></i> Add Income or Expense</h3>
         <form id="transaction-form">
-          <div class="form-row">
-            <div class="input-field">
-              <label>Transaction Type</label>
-              <select id="trans-type">
-                <option value="income">Income (+)</option>
-                <option value="expense">Expense (-)</option>
-              </select>
-            </div>
-            <div class="input-field">
-              <label>Category</label>
-              <select id="trans-category">
-                <option value="Salary / Income">Salary / Income</option>
-                <option value="Food & Drinks">Food & Drinks</option>
-                <option value="Transport">Transport & Fuel</option>
-                <option value="Rent & Bills">Rent & Bills</option>
-                <option value="Entertainment">Entertainment & Shopping</option>
-                <option value="Others">Others</option>
-              </select>
-            </div>
+          <div class="input-field">
+            <label>Transaction Type</label>
+            <select id="trans-type">
+              <option value="income">Income (+)</option>
+              <option value="expense">Expense (-)</option>
+            </select>
           </div>
 
-          <div class="form-row">
-            <div class="input-field">
-              <label>Description</label>
-              <input type="text" id="trans-desc" placeholder="e.g., Received Salary or Lunch" required>
-            </div>
-            <div class="input-field">
-              <label>Amount (in TZS)</label>
-              <input type="number" id="trans-amount" placeholder="e.g., 10000" required>
-            </div>
+          <div class="input-field">
+            <label>Category</label>
+            <select id="trans-category">
+              <option value="Salary / Income">Salary / Income</option>
+              <option value="Food & Drinks">Food & Drinks</option>
+              <option value="Transport">Transport & Fuel</option>
+              <option value="Rent & Bills">Rent & Bills</option>
+              <option value="Entertainment">Entertainment & Shopping</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+
+          <div class="input-field">
+            <label>Description</label>
+            <input type="text" id="trans-desc" placeholder="Ex: Received salary for work" required>
+          </div>
+
+          <div class="input-field">
+            <label>Amount (in TZS)</label>
+            <input type="number" id="trans-amount" placeholder="Ex: 50000" required>
           </div>
 
           <button type="submit" class="btn-add"><i class="fa-solid fa-plus"></i> Save Transaction</button>
         </form>
       </section>
 
-      <!-- 5. TRANSACTION HISTORY -->
+      <!-- TRANSACTION HISTORY -->
       <section class="history-card">
-        <h3><i class="fa-solid fa-list-check"></i> Transaction History</h3>
-        <ul id="transaction-list" class="transaction-list"></ul>
+        <div class="history-header">
+          <h3><i class="fa-solid fa-list-check"></i> Transaction History</h3>
+          <button id="view-all-btn" class="btn-view-all">View All <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <ul id="transaction-list" class="transaction-list">
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            <h4>No transactions yet</h4>
+            <p>Your income and expense transactions will appear here.</p>
+          </div>
+        </ul>
       </section>
+      
+      <!-- LOGOUT BUTTON AT THE BOTTOM -->
+      <div class="logout-container">
+        <button id="logout-btn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout Account</button>
+      </div>
+
     </main>
   </div>
 
