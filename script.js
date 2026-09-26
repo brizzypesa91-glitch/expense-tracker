@@ -1,423 +1,131 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // DOM Elements
-  const authSection = document.getElementById('auth-section');
-  const dashboardSection = document.getElementById('dashboard-section');
-
-  const loginBox = document.getElementById('login-box');
-  const signupBox = document.getElementById('signup-box');
-
-  const btnShowSignUp = document.getElementById('btn-show-signup');
-  const btnShowLogin = document.getElementById('btn-show-login');
-
-  const loginForm = document.getElementById('login-form');
-  const signupForm = document.getElementById('signup-form');
-  const logoutBtn = document.getElementById('logout-btn');
-
-  const userDisplayName = document.getElementById('user-display-name');
-  const totalBalance = document.getElementById('total-balance');
-  const totalIncome = document.getElementById('total-income');
-  const totalExpense = document.getElementById('total-expense');
-
-  const transactionForm = document.getElementById('transaction-form');
-  const transactionList = document.getElementById('transaction-list');
-
-  const profileUpload = document.getElementById('profile-upload');
-  const avatarPreview = document.getElementById('avatar-preview');
-
-  // Modal Elements
-  const modalOverlay = document.getElementById('modal-overlay');
-  const modalTitle = document.getElementById('modal-title');
-  const modalMessage = document.getElementById('modal-message');
-  const modalBtnCancel = document.getElementById('modal-btn-cancel');
-  const modalBtnConfirm = document.getElementById('modal-btn-confirm');
-
-  // Vision Goal Elements
-  const btnEditGoal = document.getElementById('btn-edit-goal');
-  const btnAddSavings = document.getElementById('btn-add-savings');
-  const goalForm = document.getElementById('goal-form');
-  const savingsForm = document.getElementById('savings-form');
-  
-  const goalTitleDisplay = document.getElementById('goal-title-display');
-  const goalAmountDisplay = document.getElementById('goal-amount-display');
-  const goalProgressBar = document.getElementById('goal-progress-bar');
-  const goalStatusText = document.getElementById('goal-status-text');
-
-  // Data State
-  let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-  let usersDatabase = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-  let pendingTransaction = null;
-
-  // Motivational Mindset Quotes
-  const mindsetQuotes = [
-    "Today's expenses dictate tomorrow's financial freedom. Spend with discipline!",
-    "Is this purchase a genuine necessity or just a temporary desire?",
-    "The wealthy invest first and spend what is left. The poor spend first and try to invest what is left.",
-    "Do not buy unnecessary things to impress people who do not contribute to your goals!"
-  ];
-
-  function formatTZS(amount) {
-    return "TZS " + Number(amount).toLocaleString('en-US');
-  }
-
-  function saveUserData() {
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    usersDatabase = usersDatabase.map(u => u.username.toLowerCase() === currentUser.username.toLowerCase() ? currentUser : u);
-    localStorage.setItem('usersDatabase', JSON.stringify(usersDatabase));
-  }
-
-  // --- FORM TOGGLING ---
-  btnShowSignUp.addEventListener('click', () => {
-    loginBox.classList.add('is-hidden');
-    signupBox.classList.remove('is-hidden');
-  });
-
-  btnShowLogin.addEventListener('click', () => {
-    signupBox.classList.add('is-hidden');
-    loginBox.classList.remove('is-hidden');
-  });
-
-  // --- MODAL POPUP SYSTEM ---
-  function showMindsetModal(title, message, isWarning = false, onConfirm = null, onCancel = null) {
-    modalTitle.textContent = title;
-    modalMessage.textContent = message;
-    modalOverlay.classList.remove('is-hidden');
-
-    if (isWarning) {
-      modalBtnCancel.classList.remove('is-hidden');
-    } else {
-      modalBtnCancel.classList.add('is-hidden');
-    }
-
-    modalBtnConfirm.onclick = () => {
-      modalOverlay.classList.add('is-hidden');
-      if (onConfirm) onConfirm();
-    };
-
-    modalBtnCancel.onclick = () => {
-      modalOverlay.classList.add('is-hidden');
-      if (onCancel) onCancel();
-    };
-  }
-
-  // --- PROFILE PICTURE UPLOAD ---
-  avatarPreview.parentElement.addEventListener('click', () => {
-    profileUpload.click();
-  });
-
-  profileUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Image = event.target.result;
-        avatarPreview.innerHTML = `<img src="${base64Image}" alt="Profile">`;
-
-        if (currentUser) {
-          currentUser.profilePic = base64Image;
-          saveUserData();
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // --- VISION GOAL LOGIC ---
-  btnEditGoal.addEventListener('click', () => {
-    savingsForm.classList.add('is-hidden');
-    goalForm.classList.toggle('is-hidden');
-  });
-
-  btnAddSavings.addEventListener('click', () => {
-    if (!currentUser || !currentUser.goal) {
-      alert("Please set a Vision Goal first!");
-      return;
-    }
-    goalForm.classList.add('is-hidden');
-    savingsForm.classList.toggle('is-hidden');
-  });
-
-  // Set Target Goal
-  goalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('goal-title-input').value.trim();
-    const target = parseFloat(document.getElementById('goal-target-input').value);
-
-    const currentSaved = (currentUser.goal && currentUser.goal.saved) ? currentUser.goal.saved : 0;
-
-    if (currentUser) {
-      currentUser.goal = { title, target, saved: currentSaved };
-      saveUserData();
-    }
-
-    goalForm.classList.add('is-hidden');
-    goalForm.reset();
-    updateDashboard();
-  });
-
-  // Deposit Savings manually to Goal
-  savingsForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const depositAmount = parseFloat(document.getElementById('savings-amount-input').value);
-
-    if (depositAmount <= 0) {
-      alert("Please enter a valid amount!");
-      return;
-    }
-
-    if (currentUser && currentUser.goal) {
-      // 1. Ongeza akiba kwenye Goal
-      currentUser.goal.saved = (currentUser.goal.saved || 0) + depositAmount;
-      saveUserData();
-
-      // 2. Katakata kwenye main balance kama expense transaction
-      const savingsTransaction = {
-        id: Date.now(),
-        username: currentUser.username,
-        type: 'expense',
-        category: 'Others',
-        desc: `Savings Deposit: ${currentUser.goal.title}`,
-        amount: depositAmount
-      };
-
-      transactions.push(savingsTransaction);
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-
-      alert(`Successfully added ${formatTZS(depositAmount)} to your goal!`);
-    }
-
-    savingsForm.classList.add('is-hidden');
-    savingsForm.reset();
-    updateDashboard();
-  });
-
-  // --- AUTHENTICATION CHECK ---
-  function checkAuthState() {
-    if (currentUser) {
-      authSection.classList.add('is-hidden');
-      dashboardSection.classList.remove('is-hidden');
-      userDisplayName.textContent = currentUser.username;
-      const heroUserName = document.getElementById('hero-user-name');
-      if (heroUserName) heroUserName.textContent = currentUser.username;
-
-      if (currentUser.profilePic) {
-        avatarPreview.innerHTML = `<img src="${currentUser.profilePic}" alt="Profile">`;
-      } else {
-        avatarPreview.innerHTML = `<i class="fa-solid fa-user"></i>`;
-      }
-
-      updateDashboard();
-
-      // Trigger Mindset Pop-up on Login
-      const randomQuote = mindsetQuotes[Math.floor(Math.random() * mindsetQuotes.length)];
-      showMindsetModal(`Mindset Check, ${currentUser.username}!`, randomQuote);
-
-    } else {
-      dashboardSection.classList.add('is-hidden');
-      authSection.classList.remove('is-hidden');
-    }
-  }
-
-  // Signup
-  signupForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('signup-email').value.trim();
-    const username = document.getElementById('signup-username').value.trim();
-    const password = document.getElementById('signup-password').value;
-    const confirmPassword = document.getElementById('signup-confirm-password').value;
-
-    if (password !== confirmPassword) {
-      alert("Error: Passwords do not match!");
-      return;
-    }
-
-    if (usersDatabase.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-      alert("Error: Username is already taken!");
-      return;
-    }
-
-    if (usersDatabase.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-      alert("Error: Email is already registered!");
-      return;
-    }
-
-    const newUser = { email, username, password, profilePic: "", goal: null };
-    usersDatabase.push(newUser);
-    localStorage.setItem('usersDatabase', JSON.stringify(usersDatabase));
-
-    alert("Account created successfully! Please sign in.");
-    signupForm.reset();
-    signupBox.classList.add('is-hidden');
-    loginBox.classList.remove('is-hidden');
-  });
-
-  // Login
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const identifier = document.getElementById('login-username').value.trim().toLowerCase();
-    const password = document.getElementById('login-password').value;
-
-    const foundUser = usersDatabase.find(u => 
-      (u.username.toLowerCase() === identifier || u.email.toLowerCase() === identifier) && u.password === password
-    );
-
-    if (foundUser) {
-      currentUser = foundUser;
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      loginForm.reset();
-      checkAuthState();
-    } else {
-      alert("Invalid credentials!");
-    }
-  });
-
-  // Logout
-  logoutBtn.addEventListener('click', () => {
-    currentUser = null;
+const $=id=>document.getElementById(id);
+let usersDatabase=JSON.parse(localStorage.getItem('usersDatabase')||'[]');let currentUser=JSON.parse(localStorage.getItem('currentUser')||'null');let transactions=JSON.parse(localStorage.getItem('transactions')||'[]');
+const categories={income:['Salary','Freelance','Business','Gift','Other Income'],expense:['Food & Drinks','Transport','Utilities','Shopping','Entertainment','Health','Education','Bills','Other'],savings:['Emergency Fund','New Home','Travel','Education','Investment','Other Goal']};
+const fmt=n=>'TZS '+Number(n||0).toLocaleString('en-US');
+const saveSession=()=>{localStorage.setItem('currentUser',JSON.stringify(currentUser));usersDatabase=usersDatabase.map(u=>u.username.toLowerCase()===currentUser.username.toLowerCase()?currentUser:u);localStorage.setItem('usersDatabase',JSON.stringify(usersDatabase))};
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;$('toast-container').appendChild(t);setTimeout(()=>t.remove(),2800)}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function greeting(){const h=new Date().getHours();return h>=5&&h<12?'Good morning':h>=12&&h<17?'Good afternoon':h>=17&&h<22?'Good evening':'Good night'}
+function updateGreeting(){const d=new Date();if($('user-display-name'))$('user-display-name').textContent=currentUser?.username||'User';if($('current-date'))$('current-date').textContent=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function renderAvatar(){const html=currentUser?.profilePic?`<img src="${currentUser.profilePic}" alt="Profile">`:'<i class="fa-solid fa-user"></i>';['avatar-button','side-avatar','profile-avatar'].forEach(id=>{const el=$(id);if(el)el.innerHTML=html})}
+function mine(){return transactions.filter(t=>t.username?.toLowerCase()===currentUser.username.toLowerCase())}
+function updateBudgetUI(){const budget=Number(currentUser?.monthlyBudget||0);const spent=mine().filter(t=>t.type==='expense').reduce((a,t)=>a+Number(t.amount),0);const pct=budget?Math.min(100,(spent/budget)*100):0;const d=$('monthly-budget-display');const bar=$('monthly-budget-progress');const status=$('monthly-budget-status');if(d)d.textContent=fmt(budget);if(bar)bar.style.width=pct+'%';if(status)status.textContent=budget?`${pct.toFixed(0)}% used · ${fmt(Math.max(0,budget-spent))} remaining`:'Set your monthly budget.'}function updateDashboard(){if(!currentUser)return;const list=mine();let income=0,expense=0,savings=0;list.forEach(t=>{if(t.type==='income')income+=+t.amount;else if(t.type==='expense')expense+=+t.amount;else savings+=+t.amount});const balance=income-expense-savings;$('total-income').textContent=fmt(income);$('total-expense').textContent=fmt(expense);$('total-savings').textContent=fmt(savings);$('total-balance').textContent=fmt(balance);$('user-display-name').textContent=currentUser.username;$('side-user-name').textContent=currentUser.username;$('side-user-email').textContent=currentUser.email||'';$('profile-name').textContent=currentUser.username;$('profile-email').textContent=currentUser.email||'';renderAvatar();updateBudgetUI();renderTransactions('transaction-list',list.slice(-5).reverse(),true);const goal=currentUser.goal;if(goal){const p=Math.min(100,Math.max(0,(goal.saved/(goal.target||1))*100));$('goal-title-display').textContent=goal.title;$('goal-amount-display').textContent=`${fmt(goal.saved)} / ${fmt(goal.target)}`;$('goal-percentage').textContent=p.toFixed(0)+'%';$('goal-progress-bar').style.width=p+'%';$('goal-status-text').textContent=p>=100?'Goal reached. Great work.':`${fmt(Math.max(0,goal.target-goal.saved))} remaining to reach your goal.`}else{$('goal-title-display').textContent='Set a goal and stay focused.';$('goal-amount-display').textContent='TZS 0 / TZS 0';$('goal-percentage').textContent='0%';$('goal-progress-bar').style.width='0%';$('goal-status-text').textContent='Create your first savings goal.'}}
+function renderTransactions(id,items,emptyToggle=false){const list=$(id);list.innerHTML='';items.forEach(item=>{const li=document.createElement('li');li.className='transaction-item';const icon=item.type==='income'?'fa-arrow-down':item.type==='expense'?'fa-arrow-up':'fa-piggy-bank';li.innerHTML=`<div class="trans-icon ${item.type}"><i class="fa-solid ${icon}"></i></div><div class="trans-info"><h4>${escapeHtml(item.desc)}</h4><span>${escapeHtml(item.category)} · ${new Date(item.createdAt||Date.now()).toLocaleDateString()}</span></div><div class="trans-amount ${item.type}">${item.type==='income'?'+':item.type==='expense'?'-':'+'} ${fmt(item.amount)}</div>`;list.appendChild(li)});if(emptyToggle)$('empty-transactions').classList.toggle('is-hidden',items.length>0);if(id==='all-transaction-list')$('all-empty').classList.toggle('is-hidden',items.length>0)}
+function enterApp(){updateGreeting();$('auth-section').classList.add('is-hidden');$('dashboard-section').classList.remove('is-hidden');showView('home');updateDashboard();applyAppearance(localStorage.getItem('appearance')||'light')}
+function leaveApp(){
+  const auth=window.expenseTrackerAuth;
+  const finish=()=>{
+    currentUser=null;
     localStorage.removeItem('currentUser');
-    checkAuthState();
-  });
-
-  // --- TRANSACTIONS LOGIC & BIG EXPENSE CHECK ---
-  transactionForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const type = document.getElementById('trans-type').value;
-    const category = document.getElementById('trans-category').value;
-    const desc = document.getElementById('trans-desc').value.trim();
-    const amount = parseFloat(document.getElementById('trans-amount').value);
-
-    const newTransaction = { id: Date.now(), username: currentUser.username, type, category, desc, amount };
-
-    // BIG EXPENSE CHECK: If Expense >= 50,000 TZS trigger Warning Popup
-    if (type === 'expense' && amount >= 50000) {
-      pendingTransaction = newTransaction;
-      showMindsetModal(
-        "⚠️ Big Expense Warning!",
-        `Warning: You are attempting to log a major expense of ${formatTZS(amount)} for "${desc}". Is this expense essential or will it set back your personal financial goals?`,
-        true,
-        () => {
-          saveTransaction(pendingTransaction);
-          pendingTransaction = null;
-        },
-        () => {
-          pendingTransaction = null;
-          transactionForm.reset();
-        }
-      );
-    } else {
-      saveTransaction(newTransaction);
-    }
-  });
-
-  function saveTransaction(trans) {
-    transactions.push(trans);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    updateDashboard();
-    transactionForm.reset();
-  }
-
-  function updateDashboard() {
-    let incomeSum = 0;
-    let expenseSum = 0;
-
-    transactionList.innerHTML = '';
-    const userTransactions = transactions.filter(t => t.username.toLowerCase() === currentUser.username.toLowerCase());
-
-    userTransactions.forEach((item) => {
-      if (item.type === 'income') {
-        incomeSum += item.amount;
-      } else {
-        expenseSum += item.amount;
-      }
-
-      const li = document.createElement('li');
-      li.className = `transaction-item ${item.type}`;
-      li.innerHTML = `
-        <div class="trans-info">
-          <h4>${item.desc}</h4>
-          <span>${item.category}</span>
-        </div>
-        <div class="trans-amount">${item.type === 'income' ? '+' : '-'} ${formatTZS(item.amount)}</div>
-      `;
-      transactionList.prepend(li);
-    });
-
-    const balance = incomeSum - expenseSum;
-
-    totalBalance.textContent = formatTZS(balance);
-    totalIncome.textContent = formatTZS(incomeSum);
-    totalExpense.textContent = formatTZS(expenseSum);
-
-    // UPDATE VISION GOAL DISPLAY BASED ON MANUAL SAVINGS
-    if (currentUser && currentUser.goal) {
-      const { title, target, saved = 0 } = currentUser.goal;
-      const progressPercent = Math.min(100, Math.max(0, (saved / target) * 100)).toFixed(1);
-
-      goalTitleDisplay.textContent = title;
-      goalAmountDisplay.textContent = `${formatTZS(saved)} / ${formatTZS(target)}`;
-      goalProgressBar.style.width = `${progressPercent}%`;
-
-      if (saved >= target) {
-        goalStatusText.textContent = "🎉 Congratulations! You have fully achieved your vision goal!";
-        goalStatusText.style.color = "var(--success)";
-      } else {
-        const remaining = target - saved;
-        goalStatusText.textContent = `Remaining: ${formatTZS(remaining)} (${progressPercent}% Complete)`;
-        goalStatusText.style.color = "var(--text-muted)";
-      }
-    } else {
-      goalTitleDisplay.textContent = "No goal set yet";
-      goalAmountDisplay.textContent = "TZS 0 / TZS 0";
-      goalProgressBar.style.width = "0%";
-      goalStatusText.textContent = "Set your target goal to stay focused!";
-    }
-  }
-
-  // INITIAL START
-  checkAuthState();
-});
-
-// FINANCIAL EDUCATION QUOTES SYSTEM
-const financialQuotes = [
-  "Do not save what is left after spending, but spend what is left after saving. — Warren Buffett",
-  "Beware of little expenses. A small leak will sink a great ship. — Benjamin Franklin",
-  "Financial freedom is available to those who learn about it and work for it.",
-  "Before buying, ask yourself: Is this a Need or a Want?",
-  "A budget tells your money where to go instead of wondering where it went.",
-  "Invest in your goals before spending on desires.",
-  "Small daily savings build long-term wealth."
-];
-
-function showTopToast(message) {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  toast.className = 'custom-toast';
-  toast.innerHTML = `
-    <div class="toast-icon"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="toast-content">
-      <span>Financial Reminder</span>
-      <p>${message}</p>
-    </div>
-  `;
-
-  container.appendChild(toast);
-
-  // Ondoa notification ikishamaliza sekunde 5
-  setTimeout(() => {
-    toast.remove();
-  }, 5000);
+    $('dashboard-section').classList.add('is-hidden');
+    $('auth-section').classList.add('is-hidden');
+    $('welcome-screen').classList.remove('is-hidden');
+    window.scrollTo({top:0,behavior:'auto'});
+    toast('You have been logged out.');
+  };
+  if(auth) auth.signOut().finally(finish); else finish();
 }
+function openModal(id){$(id).classList.remove('is-hidden')}function closeModal(id){$(id).classList.add('is-hidden')}
+function openAdd(){openModal('action-modal')}
+function openTransaction(type='expense'){closeModal('action-modal');$('trans-type').value=type;populateCategories(type);$('transaction-modal-title').textContent=type==='income'?'Add Income':type==='expense'?'Add Expense':'Add Savings';$('transaction-modal-subtitle').textContent=type==='income'?'Record money you received.':type==='expense'?'Record money you spent.':'Add money toward your savings goal.';openModal('transaction-modal')}
+function populateCategories(type){const select=$('trans-category');select.innerHTML=categories[type].map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')}
+function openGoal(){closeModal('action-modal');const g=currentUser?.goal;if(g){$('goal-title-input').value=g.title;$('goal-target-input').value=g.target}else{$('goal-title-input').value='';$('goal-target-input').value=''}openModal('goal-modal')}
+function showView(name){['home-view','transactions-view','budgets-view','profile-view'].forEach(id=>$(id).classList.toggle('is-hidden',id!==name+'-view'));document.querySelectorAll('.nav-item,.side-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));if(name==='transactions')renderTransactions('all-transaction-list',mine().slice().reverse());if(name==='home')updateGreeting();closeSidebar();window.scrollTo({top:0,behavior:'smooth'})}
+function openSidebar(){$('sidebar').classList.add('open');$('sidebar-backdrop').classList.add('show')}function closeSidebar(){$('sidebar').classList.remove('open');$('sidebar-backdrop').classList.remove('show')}
+function applyAppearance(mode){const dark=mode==='dark';document.body.classList.toggle('dark',dark);localStorage.setItem('appearance',dark?'dark':'light');$('theme-toggle').innerHTML=`<i class="fa-solid fa-${dark?'sun':'moon'}"></i>`;$('sidebar-theme').innerHTML=`<i class="fa-solid fa-${dark?'sun':'moon'}"></i><span>${dark?'Light Mode':'Dark Mode'}</span>`;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=getComputedStyle(document.body).getPropertyValue('--theme-bg').trim()|| (dark?'#071522':'#f5fbff')}
+function toggleTheme(e){document.body.classList.add('theme-transition','run');if(e){document.body.style.setProperty('--tx',e.clientX+'px');document.body.style.setProperty('--ty',e.clientY+'px')}const next=document.body.classList.contains('dark')?'light':'dark';setTimeout(()=>applyAppearance(next),90);setTimeout(()=>document.body.classList.remove('run'),760)}
+$('welcome-continue').onclick=()=>{$('welcome-screen').classList.add('is-hidden');$('auth-section').classList.remove('is-hidden')};
+$('btn-show-signup').onclick=()=>{$('login-box').classList.add('is-hidden');$('signup-box').classList.remove('is-hidden')};$('btn-show-login').onclick=()=>{$('signup-box').classList.add('is-hidden');$('login-box').classList.remove('is-hidden')};
+$('login-form').onsubmit=e=>{e.preventDefault();const id=$('login-username').value.trim().toLowerCase(),pw=$('login-password').value;const u=usersDatabase.find(x=>(x.username.toLowerCase()===id||x.email?.toLowerCase()===id)&&x.password===pw);if(!u)return toast('Incorrect login details.');currentUser=u;localStorage.setItem('currentUser',JSON.stringify(u));e.target.reset();enterApp();toast(`Welcome back, ${u.username}.`)};
+$('signup-form').onsubmit=e=>{e.preventDefault();const username=$('signup-username').value.trim(),email=$('signup-email').value.trim(),password=$('signup-password').value;if(password!==$('signup-confirm-password').value)return toast('Passwords do not match.');if(usersDatabase.some(u=>u.username.toLowerCase()===username.toLowerCase()))return toast('That username is already in use.');if(usersDatabase.some(u=>u.email?.toLowerCase()===email.toLowerCase()))return toast('That email is already registered.');const u={username,email,password,profilePic:'',goal:null};usersDatabase.push(u);localStorage.setItem('usersDatabase',JSON.stringify(usersDatabase));currentUser=u;localStorage.setItem('currentUser',JSON.stringify(u));e.target.reset();enterApp();toast(`Account created for ${username}.`)};
+async function signInWithGoogle(){
+  const auth=window.expenseTrackerAuth;
+  if(!auth){toast('Firebase could not be initialized. Check your Firebase configuration.');return}
 
-// Anzisha mzunguko wa kutoa Notification kila sekunde 45
-setInterval(() => {
-  const randomIndex = Math.floor(Math.random() * financialQuotes.length);
-  showTopToast(financialQuotes[randomIndex]);
-}, 45000);
+  const buttons=[$('google-login'),$('google-signup')].filter(Boolean);
+  buttons.forEach(btn=>{btn.disabled=true;btn.dataset.originalText=btn.textContent.trim();btn.innerHTML='<span class="google-g"><i class="fa-brands fa-google"></i></span> Connecting to Google...'});
 
-// Onyesha notification ya kwanza sekunde 5 baada ya kuingia kwenye site
-setTimeout(() => {
-  showTopToast("Welcome Brizzy! Always track your money to stay in control of your vision.");
-}, 5000);
+  try{
+    const provider=new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt:'select_account'});
+    const result=await auth.signInWithPopup(provider);
+    const googleUser=result.user;
+    const email=(googleUser.email||'').trim().toLowerCase();
+    const displayName=(googleUser.displayName||email.split('@')[0]||'Google User').trim();
+
+    // Reuse an existing local account with the same email, otherwise create a local profile
+    // that points to the Firebase Google account. App data continues to work with the
+    // existing local transaction/goal storage.
+    let u=usersDatabase.find(x=>x.googleUid===googleUser.uid || (email && x.email?.toLowerCase()===email));
+    if(!u){
+      let username=displayName.replace(/\s+/g,' ').trim()||'Google User';
+      const base=username;
+      let suffix=2;
+      while(usersDatabase.some(x=>x.username?.toLowerCase()===username.toLowerCase())) username=`${base} ${suffix++}`;
+      u={username,email,googleUid:googleUser.uid,password:'',profilePic:googleUser.photoURL||'',goal:null};
+      usersDatabase.push(u);
+    }else{
+      u.email=email||u.email||'';
+      u.googleUid=googleUser.uid;
+      if(googleUser.photoURL) u.profilePic=googleUser.photoURL;
+      if(!u.username) u.username=displayName;
+    }
+
+    localStorage.setItem('usersDatabase',JSON.stringify(usersDatabase));
+    currentUser=u;
+    localStorage.setItem('currentUser',JSON.stringify(currentUser));
+    enterApp();
+    toast(`Welcome, ${currentUser.username}.`);
+  }catch(error){
+    console.error('Google Sign-In error:',error);
+    const messages={
+      'auth/popup-closed-by-user':'Google sign-in was cancelled.',
+      'auth/popup-blocked':'Your browser blocked the Google sign-in window. Please allow pop-ups and try again.',
+      'auth/unauthorized-domain':'This website domain is not authorized in Firebase Authentication.',
+      'auth/operation-not-allowed':'Google Sign-In is not enabled in Firebase Authentication yet.',
+      'auth/network-request-failed':'Network error. Check your internet connection and try again.'
+    };
+    toast(messages[error.code]||'Google Sign-In failed. Please try again.');
+  }finally{
+    buttons.forEach(btn=>{btn.disabled=false;btn.innerHTML='<span class="google-g"><i class="fa-brands fa-google"></i></span> Continue with Google'});
+  }
+}
+['google-login','google-signup'].forEach(id=>$(id).onclick=signInWithGoogle);
+document.querySelectorAll('.field-action').forEach(b=>b.onclick=()=>{const i=$(b.dataset.password);i.type=i.type==='password'?'text':'password';b.innerHTML=i.type==='password'?'<i class="fa-regular fa-eye"></i>':'<i class="fa-regular fa-eye-slash"></i>'});
+function logout(){leaveApp()}
+$('sidebar-logout').onclick=logout;$('profile-logout').onclick=logout;$('avatar-button').onclick=()=>$('profile-upload').click();$('profile-photo-btn').onclick=()=>$('profile-upload').click();$('profile-upload').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{currentUser.profilePic=r.result;saveSession();renderAvatar();toast('Profile photo updated.')};r.readAsDataURL(f)};
+$('transaction-form').onsubmit=e=>{e.preventDefault();const type=$('trans-type').value,amount=+$('trans-amount').value;if(amount<=0)return toast('Enter a valid amount.');if(type==='savings'&&!currentUser.goal)return toast('Create a savings goal first.');const t={id:Date.now(),username:currentUser.username,type,category:$('trans-category').value,desc:$('trans-desc').value.trim(),amount,createdAt:Date.now()};transactions.push(t);localStorage.setItem('transactions',JSON.stringify(transactions));$('transaction-form').reset();closeModal('transaction-modal');updateDashboard();toast(`${type==='income'?'Income':type==='expense'?'Expense':'Savings'} saved.`)};
+$('goal-form').onsubmit=e=>{e.preventDefault();const title=$('goal-title-input').value.trim(),target=+$('goal-target-input').value;if(target<=0)return toast('Enter a valid target amount.');currentUser.goal={title,target,saved:currentUser.goal?.saved||0};saveSession();closeModal('goal-modal');updateDashboard();toast('Savings goal saved.')};
+$('savings-form').onsubmit=e=>{e.preventDefault();const amount=+$('savings-amount-input').value;if(amount<=0||!currentUser.goal)return;transactions.push({id:Date.now(),username:currentUser.username,type:'savings',category:'Savings Goal',desc:`Savings for ${currentUser.goal.title}`,amount,createdAt:Date.now()});currentUser.goal.saved=(currentUser.goal.saved||0)+amount;saveSession();localStorage.setItem('transactions',JSON.stringify(transactions));e.target.reset();closeModal('goal-modal');updateDashboard();toast('Savings added to your goal.')};
+$('btn-add-savings').onclick=openGoal;$('btn-edit-goal').onclick=openGoal;$('view-all-btn').onclick=()=>showView('transactions');$('nav-add').onclick=openAdd;$('menu-btn').onclick=openSidebar;$('sidebar-close').onclick=closeSidebar;$('sidebar-backdrop').onclick=closeSidebar;$('theme-toggle').onclick=(e)=>toggleTheme(e);$('sidebar-theme').onclick=(e)=>toggleTheme(e);$('profile-theme').onclick=(e)=>toggleTheme(e);
+$('notification-btn').onclick=()=>{$('notification-list').innerHTML=`<div><strong>${escapeHtml(currentUser?.username||'User')}</strong>, your dashboard is ready.</div><div>Keep your savings goal updated and review your recent transactions.</div>`;openModal('notification-modal')};
+document.querySelectorAll('[data-close-modal]').forEach(b=>b.onclick=()=>closeModal(b.dataset.closeModal));document.querySelectorAll('[data-open-transaction]').forEach(b=>b.onclick=()=>openTransaction(b.dataset.openTransaction));document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));document.querySelectorAll('.side-item[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));document.querySelectorAll('[data-action="add"]').forEach(b=>b.onclick=openAdd);document.querySelectorAll('[data-action="goal"]').forEach(b=>b.onclick=openGoal);document.querySelectorAll('.profile-links [data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+$('edit-budget-btn').onclick=()=>{$('budget-form').classList.toggle('is-hidden');if(currentUser)$('monthly-budget-input').value=currentUser.monthlyBudget||''};$('budget-form').onsubmit=e=>{e.preventDefault();const value=Number($('monthly-budget-input').value);if(value<=0)return toast('Enter a valid monthly budget.');currentUser.monthlyBudget=value;saveSession();$('budget-form').classList.add('is-hidden');updateBudgetUI();toast('Monthly budget saved.')};
+applyAppearance(localStorage.getItem('appearance')||'light');
+
+/* Theme chooser — Design 2 is the permanent default until the user chooses another. */
+(function initThemeChooser(){
+  const themeKeys=['theme-4','theme-2','glass','theme-1','theme-3','theme-5','theme-6','theme-7'];
+  const saved=localStorage.getItem('niliemTheme') || 'theme-4';
+  document.body.dataset.theme=themeKeys.includes(saved)?saved:'theme-4';
+
+  function markSelected(){
+    document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.classList.toggle('selected',btn.dataset.themeChoice===document.body.dataset.theme));
+  }
+  function setTheme(key){
+    if(!themeKeys.includes(key)) key='theme-4';
+    document.body.dataset.theme=key;
+    applyAppearance(localStorage.getItem('appearance')||'light');
+    localStorage.setItem('niliemTheme',key);
+    markSelected();
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.content=getComputedStyle(document.body).getPropertyValue('--theme-bg').trim() || '#06110f';
+    toast(`${document.querySelector(`[data-theme-choice="${key}"] strong`)?.textContent || 'Theme'} selected.`);
+  }
+  document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.addEventListener('click',()=>setTheme(btn.dataset.themeChoice)));
+  document.getElementById('themes-toggle')?.addEventListener('click',()=>openModal('themes-modal'));
+  document.getElementById('sidebar-themes')?.addEventListener('click',()=>{closeSidebar();openModal('themes-modal')});
+  markSelected();
+  /* Keep the visual system applied even when the session was already stored. */
+  setTimeout(()=>{setTheme(document.body.dataset.theme);applyAppearance(localStorage.getItem('appearance')||'light')},0);
+})();

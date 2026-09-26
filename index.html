@@ -1,268 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker - Expense Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff"><title>Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"><link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-   <!-- TOP FLOATING TOAST NOTIFICATION CONTAINER -->
 <div id="toast-container" class="toast-container"></div>
-
-<!-- MINDSET & EXPENSE WARNING POPUP MODAL -->
-<div id="modal-overlay" class="modal-overlay is-hidden">
-  <div class="modal-card modal-reminder">
-    <div class="modal-icon warning-icon" id="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-    <h3 id="modal-title">Reminder, Brizzy!</h3>
-    <p id="modal-message">Is this purchase a genuine necessity or just a temporary desire?</p>
-    <div class="modal-actions">
-      <button id="modal-btn-cancel" class="btn-modal-cancel is-hidden">Cancel Expense</button>
-      <button id="modal-btn-confirm" class="btn-modal-confirm">I Understand & Agree</button>
+<section id="welcome-screen" class="welcome-screen">
+  <div class="welcome-brand"><span class="brand-mark"><i class="fa-solid fa-wallet"></i></span><span>Expense Tracker</span></div>
+  <div class="welcome-visual"><div class="welcome-ring"></div><div class="welcome-wallet"><i class="fa-solid fa-wallet"></i></div><div class="welcome-chart"><i class="fa-solid fa-chart-line"></i></div></div>
+  <p class="eyebrow">SMART MONEY MANAGEMENT</p><h1>Track your money,<br><strong>build your future.</strong></h1>
+  <p>Manage your income, expenses, budgets and savings in one clean, premium workspace.</p>
+  <button id="welcome-continue" class="btn-primary">Continue <i class="fa-solid fa-arrow-right"></i></button>
+  <div class="welcome-benefits"><span><i class="fa-solid fa-shield-halved"></i> Secure</span><span><i class="fa-solid fa-gauge-high"></i> Fast</span><span><i class="fa-solid fa-chart-column"></i> Smart insights</span></div>
+</section>
+<section id="auth-section" class="auth-shell is-hidden">
+  <div class="auth-art"><div class="art-orb orb-a"></div><div class="art-orb orb-b"></div>
+    <div class="auth-brand"><span class="brand-mark"><i class="fa-solid fa-wallet"></i></span><span>Expense Tracker</span></div>
+    <div class="auth-copy"><p class="eyebrow">SMART MONEY MANAGEMENT</p><h1>Track your money,<br><strong>build your future.</strong></h1><p>Stay on top of income, expenses, budgets and savings from one beautiful dashboard.</p></div>
+    <div class="wallet-art" aria-hidden="true"><div class="wallet-shadow"></div><div class="coin coin-1"><i class="fa-solid fa-coins"></i></div><div class="coin coin-2"><i class="fa-solid fa-coins"></i></div><div class="wallet"><div class="wallet-flap"></div><div class="wallet-dot"></div></div><div class="trend-badge"><i class="fa-solid fa-arrow-trend-up"></i></div></div>
+    <div class="auth-benefits"><span><i class="fa-solid fa-shield-halved"></i> Secure</span><span><i class="fa-solid fa-gauge-high"></i> Fast</span><span><i class="fa-solid fa-chart-line"></i> Smart insights</span></div>
+  </div>
+  <div class="auth-panel"><div class="auth-mobile-brand"><span class="brand-mark"><i class="fa-solid fa-wallet"></i></span><span>Expense Tracker</span></div>
+    <div id="login-box" class="auth-card"><div class="auth-heading"><span class="mini-icon"><i class="fa-solid fa-right-to-bracket"></i></span><h2>Welcome back</h2><p>Sign in to manage your money.</p></div>
+      <form id="login-form"><label class="field"><span><i class="fa-regular fa-envelope"></i></span><input id="login-username" type="text" placeholder="Email or username" required></label><label class="field"><span><i class="fa-solid fa-lock"></i></span><input id="login-password" type="password" placeholder="Password" required><button type="button" class="field-action" data-password="login-password"><i class="fa-regular fa-eye"></i></button></label><button type="submit" class="btn-primary">Log In <i class="fa-solid fa-arrow-right"></i></button></form>
+      <div class="divider"><span>or</span></div><button id="google-login" type="button" class="btn-google"><span class="google-g"><i class="fa-brands fa-google"></i></span> Continue with Google</button>
+      <p class="auth-switch">Don't have an account? <button type="button" id="btn-show-signup">Create Account</button></p>
+    </div>
+    <div id="signup-box" class="auth-card is-hidden"><div class="auth-heading"><span class="mini-icon"><i class="fa-solid fa-user-plus"></i></span><h2>Create Account</h2><p>Use only your name, email and password.</p></div>
+      <form id="signup-form"><label class="field"><span><i class="fa-solid fa-user"></i></span><input id="signup-username" type="text" placeholder="Username / name" required></label><label class="field"><span><i class="fa-regular fa-envelope"></i></span><input id="signup-email" type="email" placeholder="Email address" required></label><label class="field"><span><i class="fa-solid fa-lock"></i></span><input id="signup-password" type="password" placeholder="Password (min 6 chars)" minlength="6" required><button type="button" class="field-action" data-password="signup-password"><i class="fa-regular fa-eye"></i></button></label><label class="field"><span><i class="fa-solid fa-lock"></i></span><input id="signup-confirm-password" type="password" placeholder="Confirm password" minlength="6" required><button type="button" class="field-action" data-password="signup-confirm-password"><i class="fa-regular fa-eye"></i></button></label><button type="submit" class="btn-primary">Create Account <i class="fa-solid fa-arrow-right"></i></button></form>
+      <div class="divider"><span>or</span></div><button id="google-signup" type="button" class="btn-google"><span class="google-g"><i class="fa-brands fa-google"></i></span> Continue with Google</button><p class="auth-switch">Already have an account? <button type="button" id="btn-show-login">Log In</button></p>
     </div>
   </div>
-</div>
-  <div id="modal-overlay" class="modal-overlay is-hidden">
-    <div class="modal-card">
-      <div class="modal-icon" id="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h3 id="modal-title">Financial Mindset Check</h3>
-      <p id="modal-message">Loading message...</p>
-      <div class="modal-actions">
-        <button id="modal-btn-cancel" class="btn-modal-cancel is-hidden">Cancel Expense</button>
-        <button id="modal-btn-confirm" class="btn-modal-confirm">I Understand & Agree</button>
-      </div>
-    </div>
+</section>
+<section id="dashboard-section" class="app-shell is-hidden">
+  <aside id="sidebar" class="sidebar"><div class="sidebar-brand"><span class="brand-mark"><i class="fa-solid fa-wallet"></i></span><span>Expense Tracker</span><button id="sidebar-close" class="icon-btn mobile-only"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="side-user"><button class="avatar large" id="side-avatar"><i class="fa-solid fa-user"></i></button><div><strong id="side-user-name">User</strong><span id="side-user-email">user@example.com</span></div></div>
+    <nav class="side-nav"><button class="side-item active" data-view="home"><i class="fa-solid fa-house"></i><span>Home</span></button><button class="side-item" data-action="add"><i class="fa-solid fa-plus"></i><span>Add Transaction</span></button><button class="side-item" data-action="goal"><i class="fa-solid fa-bullseye"></i><span>Savings Goal</span></button><button class="side-item" data-view="transactions"><i class="fa-solid fa-receipt"></i><span>Recent Transactions</span></button><button class="side-item" data-view="budgets"><i class="fa-solid fa-chart-pie"></i><span>Budgets</span></button><button class="side-item" data-view="profile"><i class="fa-regular fa-user"></i><span>Profile</span></button></nav>
+    <div class="sidebar-bottom"><button id="sidebar-themes" class="side-item"><i class="fa-solid fa-palette"></i><span>Themes</span></button><button id="sidebar-theme" class="side-item"><i class="fa-solid fa-moon"></i><span>Dark Mode</span></button><button id="sidebar-logout" class="side-item danger"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span></button></div>
+  </aside><div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+  <div class="app-main"><header class="topbar"><div class="topbar-left"><button id="menu-btn" class="round-btn mobile-only"><i class="fa-solid fa-bars"></i></button><div class="topbar-brand"><span class="brand-mark"><i class="fa-solid fa-wallet"></i></span><span>Expense Tracker</span></div></div><div class="topbar-actions"><button class="theme-top-btn" id="themes-toggle" aria-label="Choose theme"><i class="fa-solid fa-palette"></i><span>Themes</span></button><button class="round-btn" id="theme-toggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button><button class="round-btn" id="notification-btn" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><button class="avatar" id="avatar-button"><i class="fa-solid fa-user"></i></button><input id="profile-upload" type="file" accept="image/*" hidden></div></header>
+  <main class="main-content">
+    <section id="home-view">
+      <section class="welcome-row"><div><h1>Hello, <span id="user-display-name">User</span></h1><p class="muted">Here's your financial overview.</p></div><button class="date-chip"><i class="fa-regular fa-calendar"></i> <span id="current-date">Today</span></button></section>
+      <section class="balance-card"><div class="balance-copy"><span>Total Balance <i id="balance-eye" class="fa-regular fa-eye"></i></span><strong id="total-balance">TZS 0</strong><small><i class="fa-solid fa-arrow-trend-up"></i> Available balance</small></div><div class="chart-wrap"><svg viewBox="0 0 300 105" preserveAspectRatio="none" aria-label="Balance trend"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#67f2c2" stop-opacity=".36"/><stop offset="1" stop-color="#67f2c2" stop-opacity="0"/></linearGradient></defs><path class="chart-area" d="M0 84 C32 78 42 65 67 70 S105 88 126 60 S162 50 181 58 S218 40 239 48 S267 22 300 28 L300 105 L0 105 Z"/><path class="chart-line" d="M0 84 C32 78 42 65 67 70 S105 88 126 60 S162 50 181 58 S218 40 239 48 S267 22 300 28"/></svg><div class="chart-labels"><span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span></div></div></section>
+      <section class="metric-row"><article class="metric-card income"><div class="metric-icon"><i class="fa-solid fa-arrow-down"></i></div><div><span>Income</span><strong id="total-income">TZS 0</strong><small><i class="fa-solid fa-arrow-trend-up"></i> This month</small></div></article><article class="metric-card expense"><div class="metric-icon"><i class="fa-solid fa-arrow-up"></i></div><div><span>Expenses</span><strong id="total-expense">TZS 0</strong><small><i class="fa-solid fa-arrow-trend-down"></i> This month</small></div></article><article class="metric-card savings"><div class="metric-icon"><i class="fa-solid fa-piggy-bank"></i></div><div><span>Savings</span><strong id="total-savings">TZS 0</strong><small><i class="fa-solid fa-bullseye"></i> Goal progress</small></div></article></section>
+      <section class="content-grid"><article class="panel transactions-panel"><div class="panel-head"><div><h2>Recent Transactions</h2><p>Latest activity on your account</p></div><button id="view-all-btn" class="text-btn">See all</button></div><ul id="transaction-list" class="transaction-list"></ul><div id="empty-transactions" class="empty-state"><i class="fa-regular fa-folder-open"></i><p>No transactions yet.</p><span>Add an income, expense or saving.</span></div></article><article class="panel goal-panel"><div class="panel-head"><div><h2>Savings Goal</h2><p id="goal-title-display">Set a goal and stay focused.</p></div><button id="btn-edit-goal" class="icon-btn"><i class="fa-solid fa-pen"></i></button></div><div class="goal-amount"><strong id="goal-amount-display">TZS 0 / TZS 0</strong><span id="goal-percentage">0%</span></div><div class="progress-track"><div id="goal-progress-bar" class="progress-fill"></div></div><p id="goal-status-text" class="goal-status">Create your first savings goal.</p><button id="btn-add-savings" class="goal-add"><i class="fa-solid fa-plus"></i> Add Savings</button></article></section>
+    </section>
+    <section id="transactions-view" class="page-view is-hidden"><div class="page-title"><div><p class="eyebrow">ACTIVITY</p><h1>Transactions</h1><p>Review all income, expenses and savings.</p></div><button class="btn-primary compact" data-action="add"><i class="fa-solid fa-plus"></i> Add</button></div><div class="panel"><ul id="all-transaction-list" class="transaction-list full"></ul><div id="all-empty" class="empty-state"><i class="fa-regular fa-folder-open"></i><p>No transactions yet.</p></div></div></section>
+    <section id="budgets-view" class="page-view is-hidden"><div class="page-title"><div><p class="eyebrow">PLANNING</p><h1>Budgets</h1><p>Keep your spending within your plan.</p></div></div><div class="budget-hero panel"><div><div><span>Monthly Budget</span><strong id="monthly-budget-display">TZS 0</strong></div><button id="edit-budget-btn" class="icon-btn" aria-label="Edit monthly budget"><i class="fa-solid fa-pen"></i></button></div><div class="progress-track"><div id="monthly-budget-progress" class="progress-fill" style="width:0%"></div></div><small id="monthly-budget-status">Set your monthly budget.</small><form id="budget-form" class="budget-form is-hidden"><label class="form-label">Your monthly budget<input id="monthly-budget-input" type="number" min="1" placeholder="TZS 0" required></label><button class="btn-primary" type="submit">Save Budget <i class="fa-solid fa-check"></i></button></form></div><div class="budget-grid"><div><i class="fa-solid fa-utensils"></i><span>Food & Drinks</span><strong>TZS 120,000</strong></div><div><i class="fa-solid fa-car"></i><span>Transport</span><strong>TZS 60,000</strong></div><div><i class="fa-solid fa-bolt"></i><span>Utilities</span><strong>TZS 25,000</strong></div></div></section>
+    <section id="profile-view" class="page-view is-hidden"><div class="page-title"><div><p class="eyebrow">ACCOUNT</p><h1>Profile</h1><p>Manage your account and preferences.</p></div></div><div class="panel profile-panel"><div class="profile-hero"><button class="profile-avatar" id="profile-avatar"><i class="fa-solid fa-user"></i></button><div><h2 id="profile-name">User</h2><p id="profile-email">user@example.com</p></div><button id="profile-photo-btn" class="icon-btn"><i class="fa-solid fa-camera"></i></button></div><div class="profile-links"><button><i class="fa-regular fa-user"></i><span>Personal Information</span><i class="fa-solid fa-chevron-right"></i></button><button data-view="transactions"><i class="fa-solid fa-clock-rotate-left"></i><span>Transaction History</span><i class="fa-solid fa-chevron-right"></i></button><button id="profile-theme"><i class="fa-solid fa-circle-half-stroke"></i><span>Appearance</span><span class="link-value">Light / Dark</span></button><button id="profile-logout" class="danger"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span><i class="fa-solid fa-chevron-right"></i></button></div></div></section>
+  </main>
+  <nav class="bottom-nav"><button class="nav-item active" data-view="home"><i class="fa-solid fa-house"></i><span>Home</span></button><button class="nav-item" data-view="transactions"><i class="fa-solid fa-receipt"></i><span>Transactions</span></button><button class="add-nav" id="nav-add" aria-label="Add"><i class="fa-solid fa-plus"></i></button><button class="nav-item" data-view="budgets"><i class="fa-solid fa-chart-pie"></i><span>Budgets</span></button><button class="nav-item" data-view="profile"><i class="fa-regular fa-user"></i><span>Profile</span></button></nav>
   </div>
+</section>
+<div id="action-modal" class="modal-overlay is-hidden"><div class="modal-card action-card"><button class="modal-close" data-close-modal="action-modal"><i class="fa-solid fa-xmark"></i></button><div class="modal-icon"><i class="fa-solid fa-plus"></i></div><h3>Add to your tracker</h3><p>Choose what you want to record.</p><div class="action-grid"><button data-open-transaction="income" class="action-option income"><i class="fa-solid fa-arrow-down"></i><span>Income</span><small>Money received</small></button><button data-open-transaction="expense" class="action-option expense"><i class="fa-solid fa-arrow-up"></i><span>Expense</span><small>Money spent</small></button><button data-open-transaction="savings" class="action-option savings"><i class="fa-solid fa-piggy-bank"></i><span>Savings</span><small>Add to a goal</small></button></div></div></div>
+<div id="transaction-modal" class="modal-overlay is-hidden"><div class="modal-card form-card"><button class="modal-close" data-close-modal="transaction-modal"><i class="fa-solid fa-xmark"></i></button><div class="modal-heading"><span class="mini-icon"><i class="fa-solid fa-receipt"></i></span><div><h3 id="transaction-modal-title">Add Transaction</h3><p id="transaction-modal-subtitle">Record your activity.</p></div></div><form id="transaction-form"><input id="trans-type" type="hidden" value="expense"><label class="form-label">Category<select id="trans-category"></select></label><label class="form-label">Description<input id="trans-desc" type="text" placeholder="e.g. Groceries" required></label><label class="form-label">Amount<input id="trans-amount" type="number" min="1" step="1" placeholder="TZS 0" required></label><button type="submit" class="btn-primary full-btn">Save Transaction <i class="fa-solid fa-check"></i></button></form></div></div>
+<div id="goal-modal" class="modal-overlay is-hidden"><div class="modal-card form-card"><button class="modal-close" data-close-modal="goal-modal"><i class="fa-solid fa-xmark"></i></button><div class="modal-heading"><span class="mini-icon purple"><i class="fa-solid fa-bullseye"></i></span><div><h3 id="goal-modal-title">Savings Goal</h3><p>Create or update a target.</p></div></div><form id="goal-form"><label class="form-label">Goal name<input id="goal-title-input" type="text" placeholder="e.g. New laptop" required></label><label class="form-label">Target amount<input id="goal-target-input" type="number" min="1" placeholder="TZS 0" required></label><button type="submit" class="btn-primary full-btn">Save Goal <i class="fa-solid fa-check"></i></button></form><div class="goal-deposit"><h4>Add money to this goal</h4><form id="savings-form"><label class="form-label">Amount<input id="savings-amount-input" type="number" min="1" placeholder="TZS 0" required></label><button type="submit" class="btn-secondary full-btn"><i class="fa-solid fa-plus"></i> Add Savings</button></form></div></div></div>
 
-  <!-- AUTHENTICATION SECTION -->
-  <div id="auth-section">
-    <div class="glass-card">
-      <div id="login-box">
-        <div class="auth-header">
-          <div class="logo-icon"><i class="fa-solid fa-bullseye"></i></div>
-          <h2>Welcome Back!</h2>
-          <p>Login to your Vision Goal tracker</p>
-        </div>
+<div id="themes-modal" class="modal-overlay is-hidden"><div class="modal-card themes-card"><button class="modal-close" data-close-modal="themes-modal"><i class="fa-solid fa-xmark"></i></button><div class="modal-heading"><span class="mini-icon"><i class="fa-solid fa-palette"></i></span><div><h3>Choose a Theme</h3><p>Ocean Luxe is the default. Pick any style you like.</p></div></div><div class="theme-grid">
+  <button class="theme-option theme-4" data-theme-choice="theme-4"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Ocean Luxe · Default</strong><small>Deep ocean navy with cyan accents</small></button>
+  <button class="theme-option theme-glass" data-theme-choice="glass"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Glassmorphism</strong><small>Frosted glass and layered depth</small></button>
+  <button class="theme-option theme-1" data-theme-choice="theme-1"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Clean Minimal</strong><small>White, charcoal and refined green</small></button>
+  <button class="theme-option theme-3" data-theme-choice="theme-3"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Soft Bloom</strong><small>Blush, coral and warm highlights</small></button>
+  <button class="theme-option theme-2" data-theme-choice="theme-2"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Cinematic Emerald</strong><small>Dark luxury with emerald glow</small></button>
+  <button class="theme-option theme-5" data-theme-choice="theme-5"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Gold Noir</strong><small>Black, champagne and amber</small></button>
+  <button class="theme-option theme-6" data-theme-choice="theme-6"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Sage Premium</strong><small>Soft sage and stone surfaces</small></button>
+  <button class="theme-option theme-7" data-theme-choice="theme-7"><span class="theme-preview"><b></b><i></i><em></em></span><strong>Sunset Coral</strong><small>Terracotta, peach and cream</small></button>
+</div></div></div>
+<div id="notification-modal" class="modal-overlay is-hidden"><div class="modal-card"><button class="modal-close" data-close-modal="notification-modal"><i class="fa-solid fa-xmark"></i></button><div class="modal-icon"><i class="fa-regular fa-bell"></i></div><h3>Notifications</h3><div id="notification-list" class="notification-list"></div></div></div>
+<script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-auth-compat.js"></script>
+<script>
+  // Firebase configuration supplied for the Expense Tracker web app.
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyC5O9xrG5xJmoetJ5McUvBIXKHc2ly4leM",
+    authDomain: "niliem-expense-tracker.firebaseapp.com",
+    projectId: "niliem-expense-tracker",
+    storageBucket: "niliem-expense-tracker.firebasestorage.app",
+    messagingSenderId: "198945767329",
+    appId: "1:198945767329:web:901323be0f54184d3bd5e0",
+    measurementId: "G-YSMEKSTLHL"
+  };
 
-        <form id="login-form">
-          <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" id="login-username" placeholder="Username or Email" required>
-          </div>
-          <div class="input-group">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="login-password" placeholder="Password" required>
-          </div>
-          <button type="submit" class="btn-primary">Sign In</button>
-        </form>
-
-        <div class="auth-footer">
-          <p>Don't have an account? <button type="button" id="btn-show-signup" class="btn-link">Create Account</button></p>
-        </div>
-      </div>
-
-      <div id="signup-box" class="is-hidden">
-        <div class="auth-header">
-          <div class="logo-icon"><i class="fa-solid fa-bullseye"></i></div>
-          <h2>Create Account</h2>
-          <p>Start tracking your vision securely</p>
-        </div>
-
-        <form id="signup-form">
-          <div class="input-group">
-            <i class="fa-regular fa-envelope"></i>
-            <input type="email" id="signup-email" placeholder="Email Address" required>
-          </div>
-          <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" id="signup-username" placeholder="Username" required>
-          </div>
-          <div class="input-group">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
-          </div>
-          <button type="submit" class="btn-primary">Register</button>
-        </form>
-
-        <div class="auth-footer">
-          <p>Already have an account? <button type="button" id="btn-show-login" class="btn-link">Sign In</button></p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DASHBOARD SECTION -->
-  <div id="dashboard-section" class="is-hidden">
-    
-    <!-- TOP APP HEADER -->
-    <header class="app-header">
-      <div class="header-left">
-        <button id="menu-toggle-btn" class="icon-btn"><i class="fa-solid fa-bars"></i></button>
-        <div class="brand-logo">
-          <i class="fa-solid fa-check-to-slot"></i>
-          <span>VISION GOAL</span>
-        </div>
-      </div>
-      <div class="header-right">
-        <button class="icon-btn notification-btn"><i class="fa-regular fa-bell"></i><span class="badge-dot"></span></button>
-        <div class="avatar-container" title="Upload profile picture">
-          <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-          <div id="avatar-preview" class="avatar">
-            <i class="fa-solid fa-user"></i>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <main class="dashboard-container">
-      
-      <!-- HERO WELCOME BANNER -->
-      <section class="hero-banner">
-        <div class="hero-text-content">
-          <p class="hero-subtitle">Welcome back,</p>
-          <h2 id="user-display-name">Brizzy <span class="wave-emoji">👋</span></h2>
-          <p class="hero-desc">Stay focused and reach your ultimate goal.</p>
-          <div class="hero-actions">
-            <button id="hero-btn-goals" class="btn-hero-green"><i class="fa-solid fa-bullseye"></i> My Goals</button>
-            <button id="hero-btn-add" class="btn-hero-outline"><i class="fa-solid fa-plus"></i> Add Income</button>
-          </div>
-        </div>
-        <div class="hero-image-box">
-          <div class="target-3d-icon"><i class="fa-solid fa-bullseye"></i></div>
-        </div>
-      </section>
-
-      <!-- MY ULTIMATE VISION GOAL CARD -->
-      <section class="vision-card">
-        <div class="vision-header">
-          <h3><i class="fa-solid fa-bullseye"></i> My Ultimate Vision Goal</h3>
-          <div class="goal-actions-btns">
-            <button id="btn-add-savings" class="btn-action-green"><i class="fa-solid fa-plus"></i> Am Working</button>
-            <button id="btn-edit-goal" class="btn-action-outline"><i class="fa-solid fa-pen"></i> Edit Goal</button>
-          </div>
-        </div>
-        <div class="vision-body">
-          <div class="vision-info">
-            <span id="goal-title-display" class="goal-label-text">Na goal set yako:</span>
-            <span id="goal-amount-display" class="goal-amount">TZS 0 / TZS 0</span>
-          </div>
-          <div class="progress-bar-container">
-            <div id="goal-progress-bar" class="progress-bar" style="width: 0%;"></div>
-          </div>
-          <div class="vision-footer-info">
-            <p id="goal-status-text" class="goal-status">Add your target goal to stay focused</p>
-            <span id="goal-percentage">0%</span>
-          </div>
-        </div>
-
-        <!-- HIDDEN GOAL FORMS -->
-        <form id="goal-form" class="goal-form is-hidden">
-          <input type="text" id="goal-title-input" placeholder="e.g., Build Office" required>
-          <input type="number" id="goal-target-input" placeholder="Target Amount" required>
-          <button type="submit" class="btn-save-goal">Save</button>
-        </form>
-        <form id="savings-form" class="goal-form is-hidden">
-          <input type="number" id="savings-amount-input" placeholder="Amount to add" required>
-          <button type="submit" class="btn-save-goal" style="background: var(--success);">Deposit</button>
-        </form>
-      </section>
-
-      <!-- FINANCIAL OVERVIEW (3 CARDS ROW) -->
-      <section class="financial-overview-card">
-        <h3><i class="fa-solid fa-wallet"></i> Financial Overview</h3>
-        <div class="overview-grid">
-          
-          <!-- Total Income -->
-          <div class="overview-item">
-            <p class="item-title">Total Income</p>
-            <div class="icon-circle income-circle"><i class="fa-solid fa-arrow-down"></i></div>
-            <h3 id="total-income">TZS 0</h3>
-            <span class="time-frame">All time</span>
-          </div>
-
-          <!-- Total Expense -->
-          <div class="overview-item">
-            <p class="item-title">Total Expense</p>
-            <div class="icon-circle expense-circle"><i class="fa-solid fa-arrow-up"></i></div>
-            <h3 id="total-expense">TZS 0</h3>
-            <span class="time-frame">All time</span>
-          </div>
-
-          <!-- Net Balance -->
-          <div class="overview-item">
-            <p class="item-title">Net Balance</p>
-            <div class="icon-circle balance-circle"><i class="fa-solid fa-wallet"></i></div>
-            <h3 id="total-balance">TZS 0</h3>
-            <span class="time-frame">All time</span>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ADD TRANSACTION FORM -->
-      <section class="transaction-form-card">
-        <h3><i class="fa-solid fa-circle-plus"></i> Add Income or Expense</h3>
-        <form id="transaction-form">
-          <div class="input-field">
-            <label>Transaction Type</label>
-            <select id="trans-type">
-              <option value="income">Income (+)</option>
-              <option value="expense">Expense (-)</option>
-            </select>
-          </div>
-
-          <div class="input-field">
-            <label>Category</label>
-            <select id="trans-category">
-              <option value="Salary / Income">Salary / Income</option>
-              <option value="Food & Drinks">Food & Drinks</option>
-              <option value="Transport">Transport & Fuel</option>
-              <option value="Rent & Bills">Rent & Bills</option>
-              <option value="Entertainment">Entertainment & Shopping</option>
-              <option value="Others">Others</option>
-            </select>
-          </div>
-
-          <div class="input-field">
-            <label>Description</label>
-            <input type="text" id="trans-desc" placeholder="Ex: Received salary for work" required>
-          </div>
-
-          <div class="input-field">
-            <label>Amount (in TZS)</label>
-            <input type="number" id="trans-amount" placeholder="Ex: 50000" required>
-          </div>
-
-          <button type="submit" class="btn-add"><i class="fa-solid fa-plus"></i> Save Transaction</button>
-        </form>
-      </section>
-
-      <!-- TRANSACTION HISTORY -->
-      <section class="history-card">
-        <div class="history-header">
-          <h3><i class="fa-solid fa-list-check"></i> Transaction History</h3>
-          <button id="view-all-btn" class="btn-view-all">View All <i class="fa-solid fa-arrow-right"></i></button>
-        </div>
-        <ul id="transaction-list" class="transaction-list">
-          <div class="empty-state">
-            <div class="empty-icon"><i class="fa-solid fa-file-invoice"></i></div>
-            <h4>No transactions yet</h4>
-            <p>Your income and expense transactions will appear here.</p>
-          </div>
-        </ul>
-      </section>
-      
-      <!-- LOGOUT BUTTON AT THE BOTTOM -->
-      <div class="logout-container">
-        <button id="logout-btn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout Account</button>
-      </div>
-
-    </main>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
+  try {
+    firebase.initializeApp(window.FIREBASE_CONFIG);
+    window.expenseTrackerAuth = firebase.auth();
+  } catch (error) {
+    console.error("Firebase initialization failed:", error);
+  }
+</script>
+<script src="script.js"></script>
+</body></html>
